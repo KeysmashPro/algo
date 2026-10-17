@@ -1,5 +1,8 @@
 #include <bits/stdc++.h>
 
+template <typename T>
+using vec = std::vector<T>;
+
 using namespace std;
 using u32 = unsigned int;
 using i32 = int;
@@ -8,12 +11,12 @@ i32 main(void) {
     u32 n, m, c = 0;
     cin >> n >> m;
 
-    vector<vector<pair<u32, i32>>> g(n);
-    vector<u32> tin(n, 0);
-    vector<u32> fup(n, 0);
-    vector<u32> stk; stk.reserve(n);
-    vector<bool> on_stk(n, 0);
-    vector<u32> scc(n);
+    vec<vec<pair<u32, i32>>> g(n);
+    vec<u32> tin(n, 0);
+    vec<u32> fup(n, 0);
+    vec<u32> stk; stk.reserve(n);
+    vec<bool> on_stk(n, 0);
+    vec<u32> scc(n);
 
     // Input
     for (u32 i = 0; i < m; ++i) {
@@ -28,7 +31,7 @@ i32 main(void) {
     for (u32 start = 0; start < g.size(); ++start) {
         if (tin[start]) continue;
 
-        vector<pair<u32, u32>> frames;
+        vec<pair<u32, u32>> frames;
         frames.push_back({start, 0});
         tin[start] = fup[start] = counter++;
         stk.emplace_back(start);
