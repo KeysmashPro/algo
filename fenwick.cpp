@@ -5,27 +5,28 @@ template <typename T>
 using vec = std::vector<T>;
 
 using namespace std;
+using i128 = __int128_t;
 using u64 = unsigned long long;
 using i64 = long long;
 using u32 = unsigned;
 using i32 = int;
 
-
 struct bitree {
-    vec<i64> bit; i32 n;
+    vec<i64> bit;
+    i32 n;
 
-    explicit bitree(i32 s)
-        : bit(s + 1, 0), n(s) {}
-    
-    explicit bitree(const vec<i64> &arr)
+    bitree(const vec<i64> &arr)
         : bit(arr.size() + 1, 0), n(arr.size()) {
-            for (i32 i = 0; i < n; ++i) {
-                change(i + 1, arr[i]);
+            for (i32 i = 1; i <= n; ++i) {
+                bit[i] += arr[i-1];
+                i32 x = i + (i & -i);
+                if (x > n) continue;
+                bit[x] += bit[i];
             }
     }
 
-    void change(i32 i, i64 delta) {
-        for (; i <= n; i += i & -i) {
+    void change(i32 x, i64 delta) {
+        for (i32 i = x + 1; i <= n; i += i & -i) {
             bit[i] += delta;
         }
     }
@@ -40,11 +41,13 @@ struct bitree {
 
     i64 range(u32 l, u32 r) {
         return prefix(r) - prefix(l);
-    };
+    }
 };
 
 i32 main() {
-    bitree ft({1,0,4,8,9,3,1,7});
-    cout << ft.range(1, 8) << endl;
+    bitree ft({1,2,3,4,5,6});
+    ft.change(0,-1);
+    ft.change(4, 4);
+    cout << ft.range(0, 6) << endl;
     return 0;
 }
