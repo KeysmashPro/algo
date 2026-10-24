@@ -19,7 +19,7 @@ u32 root_dsu(u32 x, vec<u32> &dsu) {
 u32 unite_dsu(u32 x1, u32 x2, vec<u32> &dsu, vec<u32> &rng) {
     u32 r1 = root_dsu(x1, dsu);
     u32 r2 = root_dsu(x2, dsu);
-    if (rng[r1] < rng[r2])  swap(r1, r2);
+    if (rng[r1] < rng[r2]) swap(r1, r2);
     rng[r1] += rng[r2];
     return dsu[r2] = r1;
 }
@@ -40,7 +40,8 @@ u32 kruskal(vec<edge> &g, vec<edge> &tree, vec<u32> &dsu, vec<u32> &rng)
 i32 main()
 {
     ifstream file("input.txt");
-    u32 n, m; file >> n >> m;
+    u32 n, m;
+    file >> n >> m;
     vec<edge> g(m);
     vec<edge> tree;
     tree.reserve(n-1);
