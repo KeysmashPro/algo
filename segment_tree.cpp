@@ -11,55 +11,47 @@ using i64 = long long;
 using u32 = unsigned;
 using i32 = int;
 
-
+template <class func, class type>
 class segment_tree {
-    vec<i64> tree;
-    i64 (*fun)(i64, i64);
-    i64 neutral;
-    u64 size;
+    func monoid;
+    type neutral;
+    vec<type> tree;
+    usize size;
 
 public:
-    explicit segment_tree(vec<i64> &arr, i64 (*f)(i64, i64), i64 t)
-        : tree(arr), fun(f), neutral(t), size(arr.size() / 2) {
+    explicit segment_tree(func f, type n, const vec<type> &val)
+        : monoid(f), neutral(n), tree(val), size(val.size() / 2) {
             for (usize i = size - 1; i > 0; --i) {
-                tree[i] = fun(tree[i<<1], tree[i<<1|1]);
+                tree[i] = monoid(tree[i<<1], tree[i<<1|1]);
             }
     };
 
-    void modify(usize i, i64 val) {
+    void modify(usize i, type val) {
         for (tree[i += size] = val; i > 1; i >>= 1) {
-            tree[i>>1] = tree[i] + tree[i^1];
+            if (i&1) { tree[i>>1] = monoid(tree[i^1], tree[i]); }
+            else     { tree[i>>1] = monoid(tree[i], tree[i^1]); }
         }
     }
 
-    void update(usize l, usize r, i64 val) {
+    type range(usize l, usize r) const {
+        type l_res = neutral;
+        type r_res = neutral;
         for (l += size, r += size; l < r; l >>= 1, r >>= 1) {
-            if (l&1) tree[l++] += val;
-            if (r&1) tree[--r] += val;
+            if (l&1) l_res = monoid(l_res, tree[l++]);
+            if (r&1) r_res = monoid(tree[--r], r_res);
         }
-    }
-
-    void assign(usize l, usize r, i64 val) {
-        //
-    }
-
-    i64 range(i64 l, i64 r) const {
-        i64 res = neutral;
-        for (l += size, r += size; l < r; l >>= 1, r >>= 1) {
-            if (l&1) res = fun(res, tree[l++]);
-            if (r&1) res = fun(tree[--r], res);
-        }
-        return res;
+        return monoid(l_res, r_res);
     }
 };
 
 i32 main() {
-    vec<i64> init = {0,0,0,0,0,8,9,4,2,-7};
+    vec<i64> init = {0,0,0,0,0,8,9,4,2,0};
     auto fun = [](i64 i0, i64 i1){
-        return min(i0, i1);
+        return i0 +i1;
     };
 
-    segment_tree tree(init, fun, ((i64)1<<60));
-    cout << tree.range(0, 6) << endl;
+    segment_tree<decltype(fun), i64> tree(fun, 0, init);
+    tree.modify(4,-7);
+    cout << tree.range(0, 5) << endl;
     return 0;
 }
